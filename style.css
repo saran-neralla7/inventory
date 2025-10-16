@@ -1,0 +1,65 @@
+/* Dark glassmorphism dashboard */
+:root{
+  --bg: #071224;
+  --panel: rgba(255,255,255,0.03);
+  --accent: #2b90ff;
+  --muted: #9fb0c2;
+  --glass-border: rgba(255,255,255,0.04);
+  --card-shadow: 0 12px 30px rgba(2,6,23,0.6);
+  --glass: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,var(--bg),#04101a);color:#e6f7fb}
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* sidebar */
+.sidebar{width:220px;padding:20px;background:var(--glass);backdrop-filter:blur(8px);border-right:1px solid var(--glass-border);display:flex;flex-direction:column;justify-content:flex-start}
+.brand{font-size:20px;color:var(--accent);font-weight:700;margin-bottom:18px}
+.sidebar nav{display:flex;flex-direction:column;gap:8px}
+.tab-btn{background:transparent;border:none;color:var(--muted);text-align:left;padding:10px;border-radius:8px;cursor:pointer;font-size:15px}
+.tab-btn.active{background:linear-gradient(90deg, rgba(43,144,255,0.06), rgba(43,144,255,0.02));color:var(--accent)}
+.sidebar-footer{margin-top:auto;color:#7f98a8;font-size:12px}
+
+/* main area */
+.main{flex:1;display:flex;flex-direction:column;overflow:auto;padding:18px}
+.topbar{display:flex;align-items:center;gap:12px;padding:8px 0;margin-bottom:12px}
+.title{font-size:18px;color:var(--accent);font-weight:600}
+.search-wrap{margin-left:auto}
+.search-wrap input{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:#dbe9ee}
+
+/* views */
+.view{display:none;opacity:0;transform:translateY(6px);transition:all .35s ease}
+.view.active{display:block;opacity:1;transform:none}
+
+/* cards */
+.cards{display:flex;gap:14px;flex-wrap:wrap}
+.card{background:var(--glass);border-radius:12px;padding:18px;min-width:160px;box-shadow:var(--card-shadow);border:1px solid var(--glass-border)}
+.card-title{font-size:13px;color:var(--muted)}
+.card-value{font-size:26px;margin-top:6px;color:#fff;font-weight:700}
+
+/* charts */
+.charts{display:flex;gap:14px;margin-top:18px}
+.chart-box{flex:1;background:var(--glass);padding:14px;border-radius:12px;box-shadow:var(--card-shadow);border:1px solid var(--glass-border);min-height:260px}
+
+/* panels */
+.panel{background:transparent;margin-top:10px}
+.panel-head{font-weight:700;font-size:16px;margin-bottom:10px}
+.panel-body{background:var(--glass);padding:14px;border-radius:12px;border:1px solid var(--glass-border);box-shadow:var(--card-shadow)}
+.grid-two{display:grid;grid-template-columns:1fr 360px;gap:12px}
+.glass-form{display:flex;flex-direction:column;gap:8px;padding:6px}
+.glass-form input, .glass-form textarea, .glass-form select{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:#e6f7fb}
+.glass-form textarea{min-height:80px;resize:vertical}
+.actions{display:flex;justify-content:flex-end;margin-top:8px}
+.btn{background:linear-gradient(90deg, rgba(43,144,255,0.12), rgba(43,144,255,0.06));border:1px solid rgba(43,144,255,0.12);color:var(--accent);padding:8px 12px;border-radius:10px;cursor:pointer}
+
+/* tables */
+.table{width:100%;border-collapse:collapse;margin-top:10px}
+.table th,.table td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left;color:#cfeff0;font-size:13px}
+.table tr:hover{background:rgba(255,255,255,0.02)}
+
+/* responsive */
+@media(max-width:900px){
+  .sidebar{width:64px}
+  .grid-two{grid-template-columns:1fr}
+  .charts{flex-direction:column}
+}

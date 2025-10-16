@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lab Inventory Dashboard</title>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#071224">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Google Charts -->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+  <!-- PapaParse for CSV (client-side) -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">Lab Inventory</div>
+      <nav>
+        <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+        <button class="tab-btn" data-tab="inventory">Inventory</button>
+        <button class="tab-btn" data-tab="repairs">Repairs</button>
+        <button class="tab-btn" data-tab="consumables">Consumables</button>
+        <button class="tab-btn" data-tab="issued">Issue Consumables</button>
+        <button class="tab-btn" data-tab="reports">Reports</button>
+      </nav>
+      <div class="sidebar-footer">Dark • Google Sheets • Drive PDFs</div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div class="title">Lab Inventory Dashboard</div>
+        <div class="search-wrap">
+          <input id="globalSearch" placeholder="Search system / model / serial..." />
+        </div>
+      </header>
+
+      <section id="content">
+        <!-- Dashboard view -->
+        <div id="view-dashboard" class="view active">
+          <div class="cards">
+            <div class="card">
+              <div class="card-title">Total Systems</div>
+              <div id="card-total-systems" class="card-value">—</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Working</div>
+              <div id="card-working" class="card-value">—</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Under Repair</div>
+              <div id="card-repair" class="card-value">—</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Total Consumables</div>
+              <div id="card-consumables" class="card-value">—</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Issued Consumables</div>
+              <div id="card-issued" class="card-value">—</div>
+            </div>
+          </div>
+
+          <div class="charts">
+            <div id="chart-pie" class="chart-box"></div>
+            <div id="chart-bar" class="chart-box"></div>
+          </div>
+        </div>
+
+        <!-- Inventory view -->
+        <div id="view-inventory" class="view">
+          <div class="panel">
+            <div class="panel-head">Inventory — Add / Bulk Upload</div>
+            <div class="panel-body grid-two">
+              <form id="form-add-inventory" class="glass-form">
+                <h4>Add Single Item</h4>
+                <input name="systemNumber" placeholder="System Number (unique)" required />
+                <input name="itemType" placeholder="Item Type (PC/Laptop)" />
+                <input name="model" placeholder="Model" />
+                <input name="serialNumber" placeholder="Serial Number" />
+                <input name="processor" placeholder="Processor" />
+                <input name="ram" placeholder="RAM (e.g., 8GB)" />
+                <input name="storage" placeholder="Storage (e.g., 512GB SSD)" />
+                <input name="purchaseDate" type="date" />
+                <input name="location" placeholder="Location" />
+                <select name="condition"><option>Working</option><option>Needs Repair</option><option>Broken</option></select>
+                <label>Purchase Invoice (PDF)</label>
+                <input id="purchaseInvoice" type="file" accept="application/pdf" />
+                <textarea name="notes" placeholder="Notes"></textarea>
+                <div class="actions">
+                  <button type="submit" class="btn">Add Item</button>
+                </div>
+              </form>
+
+              <div class="glass">
+                <h4>Bulk Upload (CSV or Excel)</h4>
+                <p>Download sample CSV template if needed. CSV header must include at least: systemNumber,itemType,model,serialNumber,processor,ram,storage,purchaseDate,location,condition,notes</p>
+                <input id="bulkFileInput" type="file" accept=".csv,.xlsx,.xls" />
+                <button id="bulkUploadBtn" class="btn">Parse & Upload</button>
+
+                <h4 style="margin-top:16px">Inventory Table</h4>
+                <div id="inventoryTableWrap"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Repairs view -->
+        <div id="view-repairs" class="view">
+          <div class="panel">
+            <div class="panel-head">Add Repair</div>
+            <div class="panel-body">
+              <form id="form-add-repair" class="glass-form">
+                <input name="systemNumber" placeholder="System Number" required />
+                <input name="repairDate" type="date" />
+                <textarea name="issue" placeholder="Issue description" required></textarea>
+                <input name="parts" placeholder="Parts replaced" />
+                <input name="estimatedCost" placeholder="Estimated cost" type="number" />
+                <input name="repairedBy" placeholder="Repaired by" />
+                <input id="repairInvoice" type="file" accept="application/pdf" />
+                <select name="status"><option>Pending</option><option>Completed</option></select>
+                <div class="actions"><button class="btn">Log Repair</button></div>
+              </form>
+
+              <h4 style="margin-top:16px">Repair History</h4>
+              <div id="repairsTableWrap"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consumables view -->
+        <div id="view-consumables" class="view">
+          <div class="panel">
+            <div class="panel-head">Consumables — Add & Stock</div>
+            <div class="panel-body grid-two">
+              <form id="form-add-consumable" class="glass-form">
+                <input name="name" placeholder="Consumable name" required />
+                <input name="receivedDate" type="date" />
+                <input name="quantity" type="number" placeholder="Quantity" required />
+                <input name="unit" placeholder="Unit (pcs/kg)" />
+                <textarea name="notes" placeholder="Notes"></textarea>
+                <div class="actions"><button class="btn">Add Consumable</button></div>
+              </form>
+
+              <div>
+                <h4>Consumable Stock</h4>
+                <div id="consumableTableWrap"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Issue consumables -->
+        <div id="view-issued" class="view">
+          <div class="panel">
+            <div class="panel-head">Issue Consumables</div>
+            <div class="panel-body">
+              <form id="form-issue" class="glass-form">
+                <select id="issueSelectItem" name="itemId"></select>
+                <input name="issuedTo" placeholder="Issued to (Name / Lab)" required />
+                <input name="issueDate" type="date" />
+                <input name="qty" type="number" placeholder="Quantity" required />
+                <textarea name="remarks" placeholder="Remarks"></textarea>
+                <div class="actions"><button class="btn">Issue</button></div>
+              </form>
+
+              <h4 style="margin-top:16px">Issued History</h4>
+              <div id="issuedTableWrap"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reports -->
+        <div id="view-reports" class="view">
+          <div class="panel">
+            <div class="panel-head">Reports</div>
+            <div class="panel-body">
+              <button id="downloadInventory" class="btn">Download Inventory CSV</button>
+              <button id="downloadRepairs" class="btn">Download Repairs CSV</button>
+              <button id="downloadConsumables" class="btn">Download Consumables CSV</button>
+              <button id="downloadIssued" class="btn">Download Issued Consumables CSV</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(()=>console.warn('SW failed'));
+    }
+  </script>
+</body>
+</html>
