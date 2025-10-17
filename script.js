@@ -7,7 +7,7 @@
   - animated tab transitions
 */
 
-const SCRIPT_URL = "https://script.google.com/a/macros/gvpcdpgc.edu.in/s/AKfycbztg_WPD3RtjylYtOt1Hv7pnlOcZlC3dzbGOB4BQZvnBtvQHXhf-r-qLawFYQNYvYcS/exec"; // <<--- Set this after deploying Code.gs
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyN6Oo1H064kn-bYny9bmkQMvrvlUP_uPqvLLp7F1emRhtbf2XYm2K-upclYLruLSI/exec"; // <<--- Set this after deploying Code.gs
 const ALLOW_PDF = true; // PDFs only
 
 // UI elements
@@ -357,3 +357,4 @@ function fileToBase64(file){
     reader.readAsDataURL(file);
   });
 }
+
